@@ -1,0 +1,14 @@
+POST  http://localhost:5000/api/create
+Content-Type: application/json
+
+{
+    "title": "test",
+    "desctiption": "test",
+}
+
+###
+
+GET  http://localhost:5000/api/all
+Content-Type: application/json
+
+###
