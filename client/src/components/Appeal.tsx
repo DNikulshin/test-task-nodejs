@@ -13,8 +13,8 @@ interface Props {
 
 export const Appeal = ({ appeal, isLoadingUpdate }: Props) => {
     const update = useStore(state => state.update)
-    const [solutionText, setSolutionText] = useState('')
-    const [cancellationReason, setCancellationReason] = useState('')
+    const [solutionText, setSolutionText] = useState(appeal.comment)
+    const [cancellationReason, setCancellationReason] = useState(appeal.comment)
     // const [comment, setComment] = useState(appeal.comment || '');
 
 

@@ -15,7 +15,7 @@ class AppealService {
   async update(id: string, appeal: IAppealDto): Promise<Appeal> {
     return await prismaClient.appeal.update({
       where: { id },
-      data: { title: appeal.title, description: appeal.description, status: appeal.status, comment: appeal.commemt }
+      data: {...appeal}
 
     })
   }
