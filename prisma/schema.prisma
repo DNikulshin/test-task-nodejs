@@ -18,6 +18,7 @@ model Appeal {
   title       String
   description String
   status      AppealStatus @default(new)
+  comment     String?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -27,7 +28,7 @@ model Appeal {
 
 enum AppealStatus {
   new
-  atWork
+  inWork
   completed
   canceled
 }

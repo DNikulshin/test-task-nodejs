@@ -5,7 +5,8 @@ import { body } from 'express-validator'
 import {
   ALL_PATH,
   CREATE_PATH,
-  UPDATE_PATH
+  UPDATE_PATH,
+  CANCEL_ALL_AT_WORK_PATH
 } from '../constants/index.js'
 
 
@@ -40,5 +41,9 @@ router.patch(UPDATE_PATH,
 
 
 router.get(ALL_PATH, appealController.getAll)
+
+router.get(CANCEL_ALL_AT_WORK_PATH, appealController.cancelAllAtWork)
+
+
 
 export default router

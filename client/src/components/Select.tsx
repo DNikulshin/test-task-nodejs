@@ -1,42 +1,47 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { IAppeal } from "../models/Appeal"
-import { useStore } from "../store/store"
 
+interface Props {
+    appeal: IAppeal
+    updateStatusHandler: (appeal: IAppeal) => Promise<void>
+}
 
 const selectStatusList = [
     { value: 'new' },
-    { value: 'atWork' },
+    { value: 'inWork' },
     { value: 'completed' },
     { value: 'canceled' }
 ]
 
+export const Select = ({ appeal, updateStatusHandler }: Props) => {
+    const [selectStatus, setSelectStatus] = useState(appeal.status)
 
-export const Select = (appeal: IAppeal) => {
-    const update = useStore(state => state.update)
-    const [selectStatus, setSelectStatus] = useState('')
+    useEffect(() => {
+        setSelectStatus(appeal.status);
+    }, [appeal.status]);
 
-    const updateStatusHandler = async (appeal: IAppeal) => {
-        await update(appeal)
-
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newStatus = e.target.value;
+        setSelectStatus(newStatus);
+        updateStatusHandler({ ...appeal, status: newStatus });
     }
-    console.log(selectStatus)
 
-    return <select
-        onChange={e => setSelectStatus(e.target.value)}
-        value={appeal.status}
-        defaultValue={appeal.status}
-    >
-        {
-            selectStatusList.
-                map(status =>
-                    <option
-                        key={status.value}
-                        className={`px-2 py-1 rounded-sm`}
-                        onClick={() => updateStatusHandler({ ...appeal, status: selectStatus })}
-                    >
-                        {status.value}
-                    </option>
-                )
-        }
-    </select>
+    return (
+        <select
+            onChange={handleChange}
+            value={selectStatus}
+            className={`px-2 py-1 rounded-sm cursor-pointer ${selectStatus}`}
+        >
+            {selectStatusList.map(status => (
+                <option
+                    key={status.value}
+                    className={status.value}
+                    value={status.value}
+                >
+                    {status.value}
+                </option>
+            ))}
+        </select>
+    )
+
 }

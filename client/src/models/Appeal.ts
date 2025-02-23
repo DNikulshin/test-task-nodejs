@@ -5,6 +5,7 @@ export interface IAppeal {
     title: string
     description: string
     status?: AppealStatus | string
+    comment?: string
     createdAt?: string
     updatedAt?: string
 }

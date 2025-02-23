@@ -15,24 +15,47 @@ class AppealService {
   async update(id: string, appeal: IAppealDto): Promise<Appeal> {
     return await prismaClient.appeal.update({
       where: { id },
-      data: { title: appeal.title, description: appeal.description, status: appeal.status }
+      data: { title: appeal.title, description: appeal.description, status: appeal.status, comment: appeal.commemt }
 
     })
   }
 
-  // async updateStatus(id: string, { status }: IAppealDto): Promise<Appeal> {
-  //   return await prismaClient.appeal.update({
-  //     where: { id },
-  //     data: { status }
+  async getAll(startDate?: string, endDate?: string): Promise<Appeal[]> {
+    const whereClause: { updatedAt?: { gte?: Date; lte?: Date } } = {};
 
-  //   })
-  // }
+    if (startDate) {
+      whereClause.updatedAt = {
+        gte: new Date(startDate)
+      };
+    }
 
-  async getAll(): Promise<Appeal[]> {
+    if (endDate) {
+      const endDateObj = new Date(endDate)
+      endDateObj.setHours(23, 59, 59, 999); // Устанавливаем время на конец дня
+      whereClause.updatedAt = {
+        ...whereClause.updatedAt,
+        lte: endDateObj
+      };
+    }
     return await prismaClient.appeal.findMany({
+      where: whereClause,
       orderBy: [{ updatedAt: 'desc' }]
     })
   }
+
+  async cancelAllInWork(): Promise<Appeal[]> {
+
+    return await prismaClient.appeal.updateManyAndReturn({
+      where: {
+        status: 'inWork'
+      },
+      data: {
+        status: 'canceled'
+      }
+    })
+  }
+
+
 }
 
 export default new AppealService()

@@ -6,10 +6,13 @@ import AppealService from '../services/appealService.ts'
 interface IStore {
     appeal: IAppeal,
     appealList: IAppeal[],
-    getAll: () => Promise<IAppeal[]>,
+    getAll: (startDate?: string, endDate?: string) => Promise<IAppeal[]>,
     create: (appeal: IAppeal) => Promise<IAppeal>,
     update: (appeal: IAppeal) => Promise<IAppeal>
-    isLoading: boolean
+    cancelAllInWork: () => Promise<IAppeal[]>
+    isLoadingGetAll: boolean
+    isLoadingUpdate: boolean
+    isLoadingCreate: boolean
     errors: IError[]
 }
 
@@ -28,27 +31,29 @@ export const useStore = create<IStore>()((set) => ({
         title: '',
         description: ''
     },
-    isLoading: false,
+    isLoadingGetAll: false,
+    isLoadingUpdate: false,
+    isLoadingCreate: false,
     errors: [],
     appealList: [],
 
-    getAll: async () => {
+    getAll: async (startDate, endDate) => {
 
         try {
             set({ errors: [] })
-            set({ isLoading: true })
-            const { data } = await AppealService.getAll()
+            set({ isLoadingGetAll: true })
+            const { data } = await AppealService.getAll(startDate, endDate)
 
             set({ appealList: data })
 
         } catch (error) {
             const errors = ErrorHandler(error)
-            set({ isLoading: false })
+            set({ isLoadingGetAll: false })
             set({ errors })
             return ErrorHandler(error)
 
         } finally {
-            set({ isLoading: false })
+            set({ isLoadingGetAll: false })
         }
 
     },
@@ -57,18 +62,18 @@ export const useStore = create<IStore>()((set) => ({
 
         try {
             set({ errors: [] })
-            set({ isLoading: true })
+            set({ isLoadingCreate: true })
             const { data } = await AppealService.create(appeal)
             set((state) => ({ appealList: [...state.appealList, data] }))
             return data
 
         } catch (error) {
             const errors = ErrorHandler(error)
-            set({ isLoading: false })
+            set({ isLoadingCreate: false })
             set({ errors })
             return ErrorHandler(error)
         } finally {
-            set({ isLoading: false })
+            set({ isLoadingCreate: false })
         }
 
     },
@@ -76,7 +81,7 @@ export const useStore = create<IStore>()((set) => ({
 
         try {
             set({ errors: [] })
-            set({ isLoading: true })
+            set({ isLoadingUpdate: true })
 
             const { data } = await AppealService.update(appeal)
             set((state) => ({ appealList: [...state.appealList, data] }))
@@ -84,14 +89,33 @@ export const useStore = create<IStore>()((set) => ({
 
         } catch (error) {
             const errors = ErrorHandler(error)
-            set({ isLoading: false })
+            set({ isLoadingUpdate: false })
             set({ errors })
             return ErrorHandler(error)
         } finally {
-            set({ isLoading: false })
+            set({ isLoadingUpdate: false })
+        }
+
+    },
+    cancelAllInWork: async () => {
+
+        try {
+            set({ errors: [] })
+            set({ isLoadingUpdate: true })
+
+            const { data } = await AppealService.cancelAllInWork()
+            set({ appealList: data })
+            return data
+
+        } catch (error) {
+            const errors = ErrorHandler(error)
+            set({ isLoadingUpdate: false })
+            set({ errors })
+            return ErrorHandler(error)
+        } finally {
+            set({ isLoadingUpdate: false })
         }
 
     }
-
 
 }))

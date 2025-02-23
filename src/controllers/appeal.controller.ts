@@ -56,11 +56,15 @@ class AppealController {
 
             const errors = validationResult(req)
 
+
+
             if (!errors.isEmpty()) {
                 return next(ApiError.BadRequest('Ошибка при валидации', errors.array()))
             }
 
-            const appeals = await appealService.getAll()
+            const { startDate, endDate } = req.query
+
+            const appeals = await appealService.getAll(startDate?.toString(), endDate?.toString())
             res.json(appeals)
 
         } catch (e) {
@@ -69,18 +73,18 @@ class AppealController {
         }
     }
 
-    // async removeUserByID(req: Request, res: Response, next: NextFunction) {
-    //     const { id } = req.params
-    //     try {
+    async cancelAllAtWork(req: Request, res: Response, next: NextFunction) {
+        console.log(req);
 
-    //         const user = await appealService.removeUserByID(id)
-    //         return res.json(user)
+        try {
+            const appeals = await appealService.cancelAllInWork()
+            res.json(appeals)
 
-    //     } catch (e) {
-    //         next(e)
+        } catch (e) {
+            next(e)
 
-    //     }
-    // }
+        }
+    }
 
 }
 

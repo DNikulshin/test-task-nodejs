@@ -6,6 +6,7 @@ export interface IAppealDto {
   title: string
   description: string
   status: AppealStatus
+  commemt?: string
   createdAt?: string
   updatedAt?: string
 }

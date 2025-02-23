@@ -1,20 +1,19 @@
-import { useEffect, useState } from "react"
-import { useStore } from "./store/store"
-import { formatDate } from "./utils/formatDate"
-import { ToastContainer } from "react-toastify"
-import { Select } from "./components/Select"
+import { useEffect, useState } from "react";
+import { useStore } from "./store/store";
+import { ToastContainer } from "react-toastify";
+import { Appeal } from "./components/Appeal";
 
 function App() {
-  const appealList = useStore(state => state.appealList)
-  const getAll = useStore(state => state.getAll)
-  const create = useStore(state => state.create)
-
-  const isLoading = useStore(state => state.isLoading)
-
+  const appealList = useStore(state => state.appealList);
+  const getAll = useStore(state => state.getAll);
+  const create = useStore(state => state.create);
+  const cancelAllInWork = useStore(state => state.cancelAllInWork);
+  const isLoadingUpdate = useStore(state => state.isLoadingUpdate);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [title, setTitle] = useState('')
-
   const [description, setDescription] = useState('')
-
+  const [isSingleDate, setIsSingleDate] = useState(false);
 
   const createHandler = async () => {
     if (title && description)
@@ -29,23 +28,22 @@ function App() {
 
 
   useEffect(() => {
-    getAll()
-  }, [appealList.length])
+    if (isSingleDate) {
+      getAll(startDate, startDate);
+    } else {
+      getAll(startDate, endDate);
+    }
+  }, [startDate, endDate, isSingleDate, appealList.length]);
 
 
-
-  if (isLoading) {
-    return (
-      <div>Загрузка...</div>
-    )
-  }
+  console.log(appealList);
 
   return (
-    <div className="flex flex-col h-screen pt-5 container max-w-[1200px] mx-auto text-center px-2 py-2 bg-gray-200/75">
-      <h1 className="text-3xl mb-5">appealList</h1>
-      <form className="flex justify-center items-center flex-col gap-3 shadow-lg mx-auto px-4 py-4 bg-gray-300/85 mb-5 rounded-md  w-full">
+    <div className="flex flex-col h-screen pt-3 container max-w-[1200px] mx-auto text-center px-2 py-2 bg-gray-200/75">
+      <h1 className="text-3xl mb-5">Appeal List</h1>
+      <form className="flex justify-center items-center flex-col gap-3 shadow-lg mx-auto px-4 py-4 bg-gray-300/85 mb-5 rounded-md  w-full sticky  top-0">
         <div className="flex flex-col gap-3 justify-center items-center">
-          <input className="border px-2 py-2" type="text" placeholder="Enter title..."
+          <input className="border px-2 py-2 w-full" type="text" placeholder="Enter title..."
             onChange={e => setTitle(e.target.value)}
             value={title}
           />
@@ -53,56 +51,77 @@ function App() {
             onChange={e => setDescription(e.target.value)}
             value={description}
           />
+          <button className="flex ml-auto bg-green-600/75 cursor-pointer px-2 py-1 rounded-sm" type="button"
+            onClick={createHandler}
+          >
+            Create
+          </button>
         </div>
-        <button className="flex ml-auto bg-green-600/75 cursor-pointer px-2 py-1 rounded-sm" type="button"
-          onClick={createHandler}
-        >Create</button>
+
       </form>
-      <div className="flex flex-col w-full justify-center items-center gap-2">
-        {appealList.length ?
-          appealList.map(appeal =>
-            <div
-              className="flex justify-between  items-center w-full border  px-4 py-2 flex-wrap shadow-md"
+      <div className="flex justify-center items-center flex-wrap gap-3 mb-4">
+        <label className="flex gap-1">
+          <input
+            type="radio"
+            checked={isSingleDate}
+            onChange={() => setIsSingleDate(true)}
+          />
+          One date
+        </label>
+        <label className="flex gap-1">
+          <input
+            type="radio"
+            checked={!isSingleDate}
+            onChange={() => setIsSingleDate(false)}
+          />
+          Date range
+        </label>
 
-              key={appeal.id}
-            >
-              <div className="flex items-center w-full border-b mb-2  justify-between py-2 flex-wrap">
-                <div>id: {appeal.id}</div>
+        <button className="bg-red-400/85 rounded-sm px-2 py-1 cursor-pointer shadow-md"
+          onClick={() => cancelAllInWork()}
+        >Cancel All in Work</button>
 
-                <div className="flex gap-2">
-                  status:
-                  <span className={appeal.status}
-
-                  >{appeal.status}</span>
-                  <Select {...appeal} key={appeal.status} />
-
-                  {/* <button className="bg-blue-400 px-2 py-1 rounded-sm"
-                    onClick={() => updateStatusHandler({ ...appeal, status: 'atWork' })}
-                  >
-                    AtWork
-                  </button> */}
-                </div>
-                <div>updatedAt: {appeal.updatedAt && formatDate(appeal.updatedAt)}</div>
-              </div>
-              <div className="flex flex-col items-start gap-3">
-                <div>
-                  title:
-                  {appeal.title}
-                </div>
-                <div>
-                  description:
-                  {appeal.description}
-                </div>
-              </div>
-            </div>
-
-          )
-          : <p className="text-2xl text-red-500">No Appeals ...</p>
-        }
       </div>
+
+      {isSingleDate ? (
+        <div className="flex gap-3 bg-gray-300 items-start justify-start mb-2">
+          <input
+            className="bg-gray-400 px-2 rounded-sm"
+            type="date"
+            onChange={e => setStartDate(e.target.value)}
+            value={startDate}
+          />
+        </div>
+      ) : (
+        <div className="flex gap-3 bg-gray-300 items-start justify-start mb-2">
+          <input
+            className="bg-gray-400 px-2 rounded-sm"
+            type="date"
+            onChange={e => setStartDate(e.target.value)}
+            value={startDate}
+          />
+          <input
+            className="bg-gray-400 px-2  rounded-sm"
+            type="date"
+            onChange={e => setEndDate(e.target.value)}
+            value={endDate}
+          />
+        </div>
+      )}
+
+      <div className="flex flex-col w-full justify-center items-center gap-2 pb-4">
+        {appealList.length ? (
+          appealList.map((appeal, idx) => (
+            <Appeal appeal={appeal} key={idx} isLoadingUpdate={isLoadingUpdate} />
+          ))
+        ) : (
+          <p className="text-2xl text-red-500">No Appeals ...</p>
+        )}
+      </div>
+
       <ToastContainer position='top-center' />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
