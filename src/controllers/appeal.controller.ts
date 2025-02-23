@@ -15,7 +15,7 @@ class AppealController {
             const { title, description } = req.body
 
             const appeal = await appealService.create({ title, description })
-            console.log(appeal);
+
 
             res.json(appeal)
 
@@ -35,12 +35,9 @@ class AppealController {
             }
 
             const { id } = req.params
-            console.log(req.params);
 
 
             const appeal = await appealService.update(id, { ...req.body })
-            console.log(appeal);
-
 
             res.json(appeal)
 
@@ -74,7 +71,6 @@ class AppealController {
     }
 
     async cancelAllAtWork(req: Request, res: Response, next: NextFunction) {
-        console.log(req);
 
         try {
             const appeals = await appealService.cancelAllInWork()

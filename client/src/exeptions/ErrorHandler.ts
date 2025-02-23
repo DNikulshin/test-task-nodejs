@@ -16,7 +16,7 @@ export default function (error: AxiosError & Error | unknown) {
 
     } else {
         console.log(error, 'unknownError');
-        toast(String(error) ?? 'Непредвиденная Ошибка!', { type: 'error' })
+        toast(String(error) || 'Непредвиденная Ошибка!', { type: 'error' })
 
         throw error
     }

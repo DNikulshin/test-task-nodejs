@@ -3,7 +3,6 @@ import prismaClient from '../../prisma/prisma.client.js'
 import { Appeal } from '@prisma/client'
 
 
-
 class AppealService {
 
   async create({ title, description }: Omit<IAppealDto, 'id' | 'status'>): Promise<Appeal> {
@@ -15,7 +14,7 @@ class AppealService {
   async update(id: string, appeal: IAppealDto): Promise<Appeal> {
     return await prismaClient.appeal.update({
       where: { id },
-      data: {...appeal}
+      data: { ...appeal }
 
     })
   }

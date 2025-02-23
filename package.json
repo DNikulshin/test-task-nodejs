@@ -12,6 +12,7 @@
     "client": "npm run dev --prefix client",
     "client:build": "npm run build --prefix client",
     "build": "rimraf ./build && npx tsc && npm run client:build",
+    "start:prod": "cross-env ENV_PROD=production node build/src/main",
     "start": "npm run build && npm run start:prod"
   },
   "keywords": [],
@@ -30,6 +31,7 @@
     "cross-env": "^7.0.3",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.1",
+    "rimraf": "^6.0.1",
     "tsx": "^4.19.3"
   },
   "prisma": {
@@ -39,6 +41,7 @@
     "@prisma/client": "^6.4.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "date-fns-tz": "^1.1.1",
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
     "prisma": "^6.4.1",
